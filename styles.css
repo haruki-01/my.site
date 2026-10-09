@@ -1,0 +1,152 @@
+:root {
+  color-scheme: light dark;
+  --bg: #0f1419;
+  --panel: #1a222c;
+  --text: #e8eef4;
+  --muted: #9fb0c0;
+  --accent: #ff6b4a;
+  --line: #3d8bfd;
+  font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #f4f7fb;
+    --panel: #ffffff;
+    --text: #1b2430;
+    --muted: #5a6b7d;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.header {
+  padding: 1.25rem 1.5rem 0.75rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--muted) 35%, transparent);
+}
+
+.header h1 {
+  margin: 0 0 0.35rem;
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.9fr);
+  gap: 0;
+  min-height: calc(100vh - 5rem);
+}
+
+.map-panel {
+  min-height: 420px;
+}
+
+#map {
+  width: 100%;
+  height: 100%;
+  min-height: calc(100vh - 5rem);
+}
+
+.sidebar {
+  padding: 1rem 1.25rem 2rem;
+  background: var(--panel);
+  border-left: 1px solid color-mix(in srgb, var(--muted) 25%, transparent);
+  overflow-y: auto;
+}
+
+.sidebar h2 {
+  margin: 1rem 0 0.5rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.sidebar section:first-child h2 {
+  margin-top: 0;
+}
+
+.sidebar ul,
+.sidebar ol {
+  margin: 0;
+  padding-left: 1.2rem;
+  line-height: 1.55;
+}
+
+.notes {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.downloads {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-top: 1.25rem;
+}
+
+.downloads a {
+  display: inline-block;
+  padding: 0.65rem 0.85rem;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--accent) 18%, var(--panel));
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.downloads a:first-child {
+  background: var(--accent);
+  color: #fff;
+}
+
+.map-fallback {
+  margin: 2rem;
+  color: var(--muted);
+}
+
+.start-marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #ff6b4a;
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 800;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  #map {
+    min-height: 55vh;
+  }
+
+  .sidebar {
+    border-left: none;
+    border-top: 1px solid color-mix(in srgb, var(--muted) 25%, transparent);
+  }
+}

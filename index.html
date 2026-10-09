@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>恵比寿3-4-4 ハーフマラソン周回</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="header">
+      <h1>恵比寿3-4-4 ハーフマラソン周回</h1>
+      <p class="subtitle" id="route-summary">読み込み中…</p>
+    </header>
+    <main class="layout">
+      <section class="map-panel">
+        <div id="map" aria-label="コース地図"></div>
+      </section>
+      <aside class="sidebar">
+        <section>
+          <h2>コース概要</h2>
+          <ul id="highlights"></ul>
+        </section>
+        <section>
+          <h2>チェックポイント</h2>
+          <ol id="waypoints"></ol>
+        </section>
+        <section>
+          <h2>注意</h2>
+          <ul id="notes" class="notes"></ul>
+        </section>
+        <section class="downloads">
+          <a id="open-maps" href="#" target="_blank" rel="noopener">Google マップで開く</a>
+          <a id="download-gpx" href="routes/ebisu-half-marathon.gpx">GPX をダウンロード</a>
+          <a id="download-json" href="routes/ebisu-half-marathon.json">JSON をダウンロード</a>
+          <a id="download-geojson" href="routes/ebisu-half-marathon.geojson">GeoJSON をダウンロード</a>
+        </section>
+      </aside>
+    </main>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="route-data.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
