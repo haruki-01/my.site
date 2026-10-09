@@ -3,19 +3,22 @@
 import json
 import urllib.parse
 import urllib.request
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+ROUTES = ROOT / "routes"
 
 START = (139.71715, 35.64492)
 TARGET_M = 21_097.5
 OSRM = "https://router.project-osrm.org/route/v1/foot"
 
-# OSRM 徒歩ルートで約 21.09 km（ハーフマラソン距離に最も近い組み合わせ）
 WAYPOINTS = [
     START,
-    (139.7108, 35.6485),   # 恵比寿ガーデンプレイス
-    (139.6580, 35.6790),   # 明治神宮外苑
-    (139.6620, 35.6650),   # 新国立競技場外周
-    (139.6850, 35.6650),   # 広尾・有栖川公園
-    (139.7050, 35.6330),   # 目黒川遊歩道
+    (139.7108, 35.6485),
+    (139.6580, 35.6790),
+    (139.6620, 35.6650),
+    (139.6850, 35.6650),
+    (139.7050, 35.6330),
     START,
 ]
 
@@ -30,6 +33,58 @@ def route_distance(coords):
         raise RuntimeError(data)
     route = data["routes"][0]
     return route["distance"], route["geometry"]["coordinates"]
+
+
+def write_outputs(meta, line):
+    ROUTES.mkdir(parents=True, exist_ok=True)
+    out = {"meta": meta, "geometry": {"type": "LineString", "coordinates": line}}
+    json_path = ROUTES / "ebisu-half-marathon.json"
+    json_path.write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    feature = {
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "properties": {
+                    "name": meta["name"],
+                    "distance_km": meta["distance_km"],
+                    "start_address": meta["start_address"],
+                },
+                "geometry": out["geometry"],
+            }
+        ],
+    }
+    (ROUTES / "ebisu-half-marathon.geojson").write_text(
+        json.dumps(feature, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+
+    gpx_lines = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<gpx version="1.1" creator="my.site" xmlns="http://www.topografix.com/GPX/1/1">',
+        "  <metadata>",
+        f"    <name>{meta['name']}</name>",
+        f"    <desc>{meta['start_address']} 発着 / {meta['distance_km']} km</desc>",
+        "  </metadata>",
+        "  <trk>",
+        f"    <name>{meta['name']}</name>",
+        "    <trkseg>",
+    ]
+    for lon, lat in line:
+        gpx_lines.append(f'      <trkpt lat="{lat:.7f}" lon="{lon:.7f}"></trkpt>')
+    gpx_lines += ["    </trkseg>", "  </trk>", "</gpx>"]
+    gpx_text = "\n".join(gpx_lines) + "\n"
+    (ROUTES / "ebisu-half-marathon.gpx").write_text(gpx_text, encoding="utf-8")
+
+    # Embed for offline / file:// viewing (no fetch required)
+    (ROOT / "route-data.js").write_text(
+        "window.ROUTE_DATA = "
+        + json.dumps(out, ensure_ascii=False)
+        + ";\nwindow.ROUTE_GPX = "
+        + json.dumps(gpx_text, ensure_ascii=False)
+        + ";\n",
+        encoding="utf-8",
+    )
 
 
 def main():
@@ -67,27 +122,7 @@ def main():
         ],
     }
 
-    out = {"meta": meta, "geometry": {"type": "LineString", "coordinates": line}}
-    with open("/workspace/routes/ebisu-half-marathon.json", "w", encoding="utf-8") as f:
-        json.dump(out, f, ensure_ascii=False, indent=2)
-
-    gpx_lines = [
-        '<?xml version="1.0" encoding="UTF-8"?>',
-        '<gpx version="1.1" creator="my.site" xmlns="http://www.topografix.com/GPX/1/1">',
-        "  <metadata>",
-        f"    <name>{meta['name']}</name>",
-        f"    <desc>{meta['start_address']} 発着 / {meta['distance_km']} km</desc>",
-        "  </metadata>",
-        "  <trk>",
-        f"    <name>{meta['name']}</name>",
-        "    <trkseg>",
-    ]
-    for lon, lat in line:
-        gpx_lines.append(f'      <trkpt lat="{lat:.7f}" lon="{lon:.7f}"></trkpt>')
-    gpx_lines += ["    </trkseg>", "  </trk>", "</gpx>"]
-    with open("/workspace/routes/ebisu-half-marathon.gpx", "w", encoding="utf-8") as f:
-        f.write("\n".join(gpx_lines) + "\n")
-
+    write_outputs(meta, line)
     print(f"Points: {len(line)}")
 
 

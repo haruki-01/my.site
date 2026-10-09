@@ -116,6 +116,11 @@ body {
   color: #fff;
 }
 
+.map-fallback {
+  margin: 2rem;
+  color: var(--muted);
+}
+
 .start-marker {
   display: flex;
   align-items: center;
